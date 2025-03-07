@@ -1,0 +1,197 @@
+<script>
+    let cart = [];
+    let pastOrders = [];
+    let totalItemsOrdered = 0;
+    let totalAmountSpent = 0;
+    
+    function addToCart(item, price) {
+        let found = cart.find(order => order.item === item);
+        if (found) {
+            found.quantity++;
+        } else {
+            cart.push({ item, price, quantity: 1 });
+        }
+        displayCart();
+    }
+
+    function removeFromCart(item) {
+        cart = cart.filter(order => order.item !== item);
+        displayCart();
+    }
+    
+    function displayCart() {
+        let cartDiv = document.getElementById('cart');
+        cartDiv.innerHTML = 'cart-item';
+        let total = 0;
+        cart.forEach(order => {
+            cartDiv.innerHTML += `<div class="cart-item">
+                <span>${order.item} (${order.quantity}) - $${order.price * order.quantity}</span>
+                <button class="remove-btn" onclick="removeFromCart('${order.item}')">Remove</button>
+            </div>`;
+            total += order.price * order.quantity;
+        });
+        cartDiv.innerHTML += `<strong>Total: $${total}</strong>`;
+    }
+
+    function checkout() {
+        if (cart.length === 0) {
+            alert('Your cart is empty!');
+            return;
+        }
+
+    let popupContent = document.getElementById('popupContent');
+    if (!popupContent) {
+        console.error("Element with ID 'popupContent' not found.");
+        return;
+    }
+
+    pastOrders.push([...cart]);
+    let orderTotal = 0;
+    popupContent.innerHTML = 'popupContent'; 
+
+    cart.forEach(order => {
+        totalItemsOrdered += order.quantity;
+        orderTotal += order.price * order.quantity;
+        popupContent.innerHTML += `<p>${order.item} (${order.quantity}) - $${order.price * order.quantity}</p>`;
+    });
+
+    totalAmountSpent += orderTotal;
+    popupContent.innerHTML += `<hr><strong>Total: $${orderTotal}</strong>`;
+
+    updateTotalItems();
+    updateTotalAmount();
+    cart = [];
+    displayCart();
+    displayOrders();
+    showPopup();
+    }
+    
+    
+    function displayOrders() {
+        let ordersDiv = document.getElementById('orders');
+        ordersDiv.innerHTML = '';
+        pastOrders.forEach((orderList, index) => {
+            ordersDiv.innerHTML += `<strong>Order ${index + 1}:</strong><br>`;
+            orderList.forEach(order => {
+                ordersDiv.innerHTML += `<p>${order.item} (${order.quantity}) - $${order.price * order.quantity}</p>`;
+            });
+            ordersDiv.innerHTML += `<hr>`;
+        });
+    }
+
+    function updateTotalItems() {
+        document.getElementById('total-items').innerText = totalItemsOrdered;
+    }
+    function updateTotalAmount() {
+        document.getElementById('total-amount').innerText = totalAmountSpent;
+    }
+    function showPopup() {
+        document.getElementById('orderPopup').style.display = 'block';
+    }
+
+    function closePopup() {
+        document.getElementById('orderPopup').style.display = 'none';
+    }
+
+
+
+    <h1>Restaurant Menu</h1>
+    <div class="menu">
+        <div class="item" onclick="addToCart('Combination Fried Rice', 150)">Combination Fried Rice- GHC150</div>
+        <div class="item" onclick="addToCart('Fried Rice', 100)">Fried Rice- GHC100</div>
+        <div class="item" onclick="addToCart('I want everything', 1500)">I want everything - GHC1500</div>
+        <div class="item" onclick="addToCart('Chili Garlic Noodles', 90)">Chili Garlic Noodles - GHC90</div>
+        <div class="item" onclick="addToCart('Banku', 50)">Banku- GHC50</div>
+        <div class="item" onclick="addToCart('Waache', 80)">Waache- GHC80</div>
+        <div class="item" onclick="addToCart('Jollof', 70)">Jollof- GHC70</div>
+        <div class="item" onclick="addToCart('Spring Roll', 40)">Spring Roll - GHC40</div>
+        <div class="item" onclick="addToCart('Chicken Lollipop', 120)">Chicken Lollipop - GHC120</div>
+        <div class="item" onclick="addToCart('3to', 90)">3to- GHC90</div>
+        <div class="item" onclick="addToCart('Fufu', 80)">Fufu- $80</div>
+        <div class="item" onclick="addToCart('Combo Pack', 100)">Combo Pack - GHC100</div>
+        <div class="item" onclick="addToCart('Half Portions', 50)">Half Portions- GHC50</div>
+        <div class="item" onclick="addToCart('Gob3', 50)">Gob3- $50</div>
+        <div class="item" onclick="addToCart('Tozafi', 80)">Tozafi- $80</div>
+        <div class="item" onclick="addToCart('Choice of Sauce', 80)">Choice of Sauce- GHC80</div>
+        <div class="item" onclick="addToCart('Butter Chicken', 90)">Butter Chicken- GHC90</div>
+        <div class="item" onclick="addToCart('Pizza', 300)">Pizza- GHC300</div>
+        <div class="item" onclick="addToCart('Potato fries', 120)">Potato fries- GHC120</div>
+        <div class="item" onclick="addToCart('Indian Breads', 80)">Indian Breads- GHC80</div>
+        <div class="item" onclick="addToCart('Indian Starters', 90)">Indian Starters- $90</div>
+    </div>
+
+    <h2>Total Items Ordered: <span id="total-items">0</span></h2>
+
+    <div class="popup" id="orderPopup">
+        <h2>Order Summary</h2>
+        <div id="popupContent"></div> <!-- This is the element in question -->
+        <button onclick="closePopup()">Close</button>
+    </div>
+    
+    <h2>Cart</h2>
+    <div class="cart" id="cart"></div>
+    <button onclick="checkout()">Checkout</button>
+
+    <h2>Past Orders</h2>
+    <div class="orders" id="orders"></div>
+
+    .menu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    color: white;
+}
+.item {
+    background-color: rgb(2, 2, 65);
+    border: 1px solid #ddd;
+    padding: 10px;
+    width: 150px;
+    text-align: center;
+    cursor: pointer;
+}
+.cart {
+    margin-top: 20px;
+    border: 1px solid #000;
+    padding: 10px;
+    width: 200px;
+    color: white;
+}
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    color: white;
+}
+.remove-btn {
+    background-color: rgb(210, 4, 4);
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+}
+.orders {
+    margin-top: 20px;
+    border: 1px solid #000;
+    padding: 10px;
+    width: 250px;
+    color: white;
+}
+
+.popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border: 1px solid #000;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+}
+.popup button {
+    margin-top: 10px;
+    display: block;
+}
+
+</script>
